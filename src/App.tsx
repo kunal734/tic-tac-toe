@@ -13,6 +13,7 @@ function App() {
   });
   const [board, setBoard] = useState(Array(9).fill(null));
   const [xIsNext, setXIsNext] = useState(true);
+  const [nextStartPlayer, setNextStartPlayer] = useState<'X' | 'O'>('O');
   const [scores, setScores] = useState({ X: 0, O: 0, draws: 0 });
   const [gameHistory, setGameHistory] = useState<Array<{
     winner: string | null;
@@ -41,9 +42,16 @@ function App() {
         ...prev, 
         { winner: result.winner, board: [...board], date: new Date() }
       ]);
+
+      // Set next starting player (alternate)
+      setNextStartPlayer(xIsNext ? 'O' : 'X');
+
     } else if (checkDraw(board)) {
       setGameStatus('draw');
       
+    } else if (checkDraw(board)) {
+      setGameStatus('draw');
+
       // Update draw count
       setScores(prevScores => ({
         ...prevScores,
@@ -55,8 +63,11 @@ function App() {
         ...prev, 
         { winner: null, board: [...board], date: new Date() }
       ]);
+
+      // Set next starting player (alternate)
+      setNextStartPlayer(xIsNext ? 'O' : 'X');
     }
-  }, [board]);
+  }, [board, xIsNext]);
 
   // Handle square click
   const handleClick = (index: number) => {
@@ -73,7 +84,7 @@ function App() {
   // Reset the game
   const resetGame = () => {
     setBoard(Array(9).fill(null));
-    setXIsNext(true);
+    setXIsNext(nextStartPlayer === 'X');
     setGameStatus('playing');
     setWinningLine(null);
   };
@@ -83,6 +94,8 @@ function App() {
     resetGame();
     setScores({ X: 0, O: 0, draws: 0 });
     setGameHistory([]);
+    // Reset to X as starting player
+    setNextStartPlayer(xIsNext ? 'O' : 'X');
   };
 
   // Get current game status message
@@ -133,6 +146,12 @@ function App() {
             </div>
             <div className="mb-4 text-center">
               <h2 className="text-xl font-semibold text-indigo-800">{getStatusMessage()}</h2>
+            {/* Show who starts next game */}
+              {gameStatus !== 'playing' && (
+                <p className="text-sm text-gray-600 mt-2">
+                  Next game starts with: <span className="font-semibold">{nextStartPlayer === 'X' ? playerNames.X : playerNames.O}</span>
+                </p>
+              )}
             </div>
 
             
