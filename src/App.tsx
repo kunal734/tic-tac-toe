@@ -45,9 +45,6 @@ function App() {
 
       // Set next starting player (alternate)
       setNextStartPlayer(xIsNext ? 'O' : 'X');
-
-    } else if (checkDraw(board)) {
-      setGameStatus('draw');
       
     } else if (checkDraw(board)) {
       setGameStatus('draw');
